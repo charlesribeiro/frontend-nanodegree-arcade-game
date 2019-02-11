@@ -6,6 +6,19 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+
+    this.speed = +100;
+
+    this.x = 12;
+    this.y = 10;
+
+    this.changeDirection = function ()   
+    {
+        this.speed = -this.speed;
+    }
+
+
+
 };
 
 // Update the enemy's position, required method for game
@@ -14,21 +27,88 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+
+    if(this.x>= 500 || this.x<0 )
+    {
+        this.changeDirection();
+
+    }
+    this.x = this.x+dt*this.speed;
+
+
+    console.log("está fazendo update");
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    console.log("render");
 };
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+class Player{
+
+
+
+
+    constructor()
+    {
+        this.sprite = 'images/char-boy.png';
+        this.x = 50;
+        this.y = 50;
+    }
+
+    update(){}
+    render()
+    {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        //console.log("render do personagem");
+    }
+    handleInput(a){
+        
+
+        switch (a)
+        {
+            case 'right':{
+                this.x = this.x+10;
+                console.log(this.x);}
+                break;
+
+            case 'left':{
+                this.x = this.x-10;
+                console.log(this.x);
+                break;
+            }
+            case 'up':{
+                this.y = this.y-10;
+                console.log(this.y);
+                break;
+            }
+            case 'down':{
+                this.y = this.y+10;
+                console.log(this.y);
+                break;
+            }
+        }   
+    }   
+}
 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
+
+
+var allEnemies = new Array();
+var enemyEvilBug = new Enemy();
+
+allEnemies.push(enemyEvilBug);
+
+
 // Place the player object in a variable called player
+
+var player = new Player();
 
 
 
@@ -41,6 +121,9 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
+
+
+    //console.log(e.keyCode);
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
