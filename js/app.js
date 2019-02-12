@@ -9,8 +9,8 @@ var Enemy = function() {
 
     this.speed = +100;
 
-    this.x = 12;
-    this.y = 10;
+    this.x = 0;
+    this.y = 0;
 
     this.changeDirection = function ()   
     {
@@ -21,6 +21,10 @@ var Enemy = function() {
 
 };
 
+
+var playerPosX =2;
+var playerPosY =2;
+
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
@@ -28,21 +32,41 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 
-    if(this.x>= 500 || this.x<0 )
+    if(shouldSpriteChangeDirection(this.x))
     {
         this.changeDirection();
 
     }
     this.x = this.x+dt*this.speed;
 
+    //if play.
 
-    console.log("está fazendo update");
+    //console.log(playerPosY, playerPosX, this.x, this.y);
+
+    if(playerPosX-5 <this.x && this.x< playerPosX+5 && playerPosY-5 <this.x &&this.x < playerPosY+5)
+    {
+        alert("evento");
+    }
+
+
+
+
+    //console.log("está fazendo update");
+
+    
 };
+
+shouldSpriteChangeDirection = function(x)
+{
+     return (x>= 500 || x<0);
+}
+
+
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    console.log("render");
+    //console.log("render");
 };
 
 // Now write your own player class
@@ -60,7 +84,17 @@ class Player{
         this.y = 50;
     }
 
-    update(){}
+    update(){
+
+        playerPosX = this.x;
+        playerPosY = this.y;
+
+        //console.log(playerPosX, playerPosY);
+
+
+
+    }
+
     render()
     {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -68,31 +102,93 @@ class Player{
     }
     handleInput(a){
         
-
         switch (a)
         {
+
             case 'right':{
-                this.x = this.x+10;
-                console.log(this.x);}
+                if(this.isMoveLegal(this.x, a))
+                    {               
+                     this.x = this.x+1;
+                    }
+                    //console.log(this.x);
+                }
                 break;
 
             case 'left':{
-                this.x = this.x-10;
-                console.log(this.x);
+                if(this.isMoveLegal(this.x, a))
+                    {               
+                     this.x = this.x-1;
+                    }
+                    //console.log(this.x);
+                }
                 break;
-            }
+
             case 'up':{
-                this.y = this.y-10;
-                console.log(this.y);
-                break;
+                if(this.isMoveLegal(this.y, a))
+                {               
+                 this.y = this.y-1;
+                }
+                //console.log(this.y);
             }
+            break;
+
             case 'down':{
-                this.y = this.y+10;
-                console.log(this.y);
-                break;
+                if(this.isMoveLegal(this.y, a))
+                {               
+                 this.y = this.y+1;
+                }
+                //console.log(this.y);
             }
+            break;
+
         }   
+    }
+
+    isMoveLegal(position, key)
+    {
+
+        var ret = false;
+
+        //console.log("position ", position);
+
+        switch (key)
+        {
+            case 'right':{
+                if(position < 450) ret = true;
+            } 
+            break;
+            case 'left':{
+                if(position >0) ret = true;
+            } 
+            break;
+            case 'up':{
+                if(position >0) 
+                    {
+                        if(position<20)
+                        {
+                            win();
+                        }
+
+                    }
+                ret = true;
+            } 
+            break;
+            case 'down':{
+                if(position < 450) ret = true;
+            } 
+            break;
+
+            
+        }
+
+        return ret;
+
     }   
+
+    win()
+    {
+        console.log("win");
+    }
 }
 
 
@@ -102,8 +198,21 @@ class Player{
 
 var allEnemies = new Array();
 var enemyEvilBug = new Enemy();
+var enemyEvilBug2 = new Enemy();
+var enemyEvilBug3 = new Enemy();
+
+enemyEvilBug.x = 10;
+enemyEvilBug.y = 30;
+
+enemyEvilBug2.x = 20;
+enemyEvilBug2.y = 250;
+
+enemyEvilBug3.x = 120;
+enemyEvilBug3.y = 150;
 
 allEnemies.push(enemyEvilBug);
+allEnemies.push(enemyEvilBug2);
+allEnemies.push(enemyEvilBug3);
 
 
 // Place the player object in a variable called player
