@@ -45,7 +45,7 @@ Enemy.prototype.update = function(dt) {
 
     if(playerPosX-5 <this.x && this.x< playerPosX+5 && playerPosY-5 <this.x &&this.x < playerPosY+5)
     {
-        alert("evento");
+        this.lose();
     }
 
 
@@ -108,7 +108,7 @@ class Player{
             case 'right':{
                 if(this.isMoveLegal(this.x, a))
                     {               
-                     this.x = this.x+1;
+                     this.x = this.x+10;
                     }
                     //console.log(this.x);
                 }
@@ -117,7 +117,7 @@ class Player{
             case 'left':{
                 if(this.isMoveLegal(this.x, a))
                     {               
-                     this.x = this.x-1;
+                     this.x = this.x-10;
                     }
                     //console.log(this.x);
                 }
@@ -126,7 +126,7 @@ class Player{
             case 'up':{
                 if(this.isMoveLegal(this.y, a))
                 {               
-                 this.y = this.y-1;
+                 this.y = this.y-10;
                 }
                 //console.log(this.y);
             }
@@ -135,7 +135,7 @@ class Player{
             case 'down':{
                 if(this.isMoveLegal(this.y, a))
                 {               
-                 this.y = this.y+1;
+                 this.y = this.y+10;
                 }
                 //console.log(this.y);
             }
@@ -166,7 +166,7 @@ class Player{
                     {
                         if(position<20)
                         {
-                            win();
+                            this.win();
                         }
 
                     }
@@ -188,6 +188,9 @@ class Player{
     win()
     {
         console.log("win");
+        alert("win");
+        this.x = 200;
+        this.y = 450;
     }
 }
 
