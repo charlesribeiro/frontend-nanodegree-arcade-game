@@ -13,6 +13,9 @@
  * writing app.js a little simpler to work with.
  */
 
+const defaultPlayerXPos = 200;
+const defaultPlayerYPos = 450;
+
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -79,7 +82,25 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
+    }
+
+    function checkCollisions()
+    {
+        console.log("verificando colisoes");
+
+
+        allEnemies.forEach(function(enemy) {
+            if(player.x > enemy.x && player.x < enemy.x +enemy.spriteWidth && player.x > enemy.y  && player.y < enemy.y+enemy.spriteWidth) 
+            {
+        
+                player.x = defaultPlayerXPos;
+                player.y = defaultPlayerYPos;
+                player.setLifes(-1);
+        
+            }
+        });
+        player.update();
     }
 
     /* This is called by the update function and loops through all of the
@@ -94,6 +115,11 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+
+        if(player.lifes==2)
+        {
+            reset();
+        }
     }
 
     /* This function initially draws the "game level", it will then call
@@ -162,7 +188,28 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+
+        Resources.load([
+            'images/stone-block.png',
+            'images/water-block.png',
+            'images/grass-block.png',
+            'images/enemy-bug.png',
+            'images/char-boy.png',
+            'images/Star.png'           // Star
+    
+        ]);
+        Resources.onReady(init);
+
+        allEnemies.forEach(function(enemy) {
+            console.log(enemy);
+            enemy.resetPositions();
+        });
+
+
+
+        //console.log("acabou");
+        //alert("game over");
+        // noop;
     }
 
     /* Go ahead and load all of the images we know we're going to need to

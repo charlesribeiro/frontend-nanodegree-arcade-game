@@ -1,3 +1,7 @@
+const _defaultPlayerXPos = 200;
+const _defaultPlayerYPos = 450;
+
+
 // Enemies our player must avoid
 var Enemy = function() {
     // Variables applied to each of our instances go here,
@@ -7,7 +11,13 @@ var Enemy = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
 
+    this.spriteWidth = 171;
+    this.spriteHeight = 101;
+
     this.speed = +100;
+
+    this.initialXPosition;
+    this.initialYPosition;
 
     this.x = 0;
     this.y = 0;
@@ -19,11 +29,80 @@ var Enemy = function() {
 
 
 
+
+
 };
 
 
-var playerPosX =2;
-var playerPosY =2;
+var playerPosX = _defaultPlayerXPos;
+var playerPosY = _defaultPlayerYPos;
+
+setPlayerPos = function(x, y)
+{
+    playerPosX = x;
+    playerPosY = y;
+
+}
+
+getPlayerXPos = function()
+{
+    return playerPosX;
+}
+
+getPlayerYPos = function()
+{
+    return playerPosY;
+}
+
+
+Enemy.prototype.setInitialPositions = function(defaultX, defaultY)
+{
+    this.initialXPosition = defaultX;
+    this.initialYPosition = defaultY;
+
+    this.x = defaultX;
+    this.y = defaultY;
+}
+
+Enemy.prototype.resetPositions = function()
+{
+
+
+    this.x = this.initialXPosition;
+    this.y = this.initialYPosition;
+    
+}
+
+
+
+// Enemy.prototype.lose = function()
+// {
+//     console.log("perdeu");
+//     alert("lose");
+
+//     setPlayerPos(defaultPlayerXPos, defaultPlayerYPos);
+// }
+
+// Enemy.prototype.collisionDetection = function(enemyX, enemySpriteW, enemyY, enemySpriteH)
+// {
+//     // if(playerPosX-enemySpriteW <enemyX && x< playerPosX+enemySpriteW && playerPosY-enemySpriteH <enemyX && enemyY< playerPosY+enemySpriteH)
+//     // {
+//     //     alert("AAAAh");
+//     //     this.lose();
+//     // }   
+
+//     console.log(enemyX, enemySpriteW, enemyY, enemySpriteH, playerPosX, playerPosY);
+
+//     if(playerPosX > enemyX && playerPosX < enemyX +enemySpriteW && playerPosY > enemyY  && playerPosY < enemyY+enemySpriteH) 
+//     {
+
+//         this.lose();
+
+//     }
+
+
+// }
+
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -43,10 +122,9 @@ Enemy.prototype.update = function(dt) {
 
     //console.log(playerPosY, playerPosX, this.x, this.y);
 
-    if(playerPosX-5 <this.x && this.x< playerPosX+5 && playerPosY-5 <this.x &&this.x < playerPosY+5)
-    {
-        this.lose();
-    }
+    // this.collisionDetection(this.x, this.spriteWidth, this.y, this.spriteHeight);
+
+
 
 
 
@@ -56,10 +134,16 @@ Enemy.prototype.update = function(dt) {
     
 };
 
+
+
+
+
+
 shouldSpriteChangeDirection = function(x)
 {
      return (x>= 500 || x<0);
 }
+
 
 
 
@@ -80,14 +164,21 @@ class Player{
     constructor()
     {
         this.sprite = 'images/char-boy.png';
-        this.x = 50;
-        this.y = 50;
+        this.x = _defaultPlayerXPos;
+        this.y = _defaultPlayerYPos;
+        this.lifes = 3;
+    }
+
+    setLifes(num)
+    {
+        debugger;
+        this.lifes+=num;
+        alert(this.lifes);
     }
 
     update(){
 
-        playerPosX = this.x;
-        playerPosY = this.y;
+        setPlayerPos(this.x, this.y);
 
         //console.log(playerPosX, playerPosY);
 
@@ -189,8 +280,8 @@ class Player{
     {
         console.log("win");
         alert("win");
-        this.x = 200;
-        this.y = 450;
+        this.x = _defaultPlayerXPos;
+        this.y = _defaultPlayerYPos;
     }
 }
 
@@ -204,14 +295,19 @@ var enemyEvilBug = new Enemy();
 var enemyEvilBug2 = new Enemy();
 var enemyEvilBug3 = new Enemy();
 
-enemyEvilBug.x = 10;
-enemyEvilBug.y = 30;
+enemyEvilBug.setInitialPositions(10,30);
+enemyEvilBug2.setInitialPositions(20,250);
+enemyEvilBug3.setInitialPositions(40, 79);
 
-enemyEvilBug2.x = 20;
-enemyEvilBug2.y = 250;
 
-enemyEvilBug3.x = 120;
-enemyEvilBug3.y = 150;
+// enemyEvilBug.x = 10;
+// enemyEvilBug.y = 30;
+
+// enemyEvilBug2.x = 20;
+// enemyEvilBug2.y = 250;
+
+// enemyEvilBug3.x = 120;
+// enemyEvilBug3.y = 150;
 
 allEnemies.push(enemyEvilBug);
 allEnemies.push(enemyEvilBug2);
