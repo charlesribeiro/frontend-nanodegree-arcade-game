@@ -1,6 +1,10 @@
 const _defaultPlayerXPos = 200;
 const _defaultPlayerYPos = 450;
+const _playerXMoveStep = 80;
+const _playerYMoveStep = 80;
 
+const _canvasWidth = 505;
+const _canvasHeigth = 606;
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -11,8 +15,8 @@ var Enemy = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
 
-    this.spriteWidth = 171;
-    this.spriteHeight = 101;
+    this.spriteWidth = 171*0.66;
+    this.spriteHeight = 101*0.0;
 
     this.speed = +100;
 
@@ -22,14 +26,15 @@ var Enemy = function() {
     this.x = 0;
     this.y = 0;
 
-    this.changeDirection = function ()   
+    this.changeDirection = function ()
     {
-        this.speed = -this.speed;
+        this.x = this.x-500;
     }
 
-
-
-
+    this.renderSpecial= function(x, y) //draws a single instance of the player sprite
+    {
+        ctx.drawImage(Resources.get(this.sprite), x, y);
+    }
 
 };
 
@@ -41,7 +46,6 @@ setPlayerPos = function(x, y)
 {
     playerPosX = x;
     playerPosY = y;
-
 }
 
 getPlayerXPos = function()
@@ -54,54 +58,24 @@ getPlayerYPos = function()
     return playerPosY;
 }
 
-
-Enemy.prototype.setInitialPositions = function(defaultX, defaultY)
+Enemy.prototype.setInitialFeatures = function(defaultX, defaultY, defaultSpeed)
 {
     this.initialXPosition = defaultX;
     this.initialYPosition = defaultY;
+    this.initialSpeed = defaultSpeed;
 
     this.x = defaultX;
     this.y = defaultY;
+    this.speed = defaultSpeed;
 }
 
 Enemy.prototype.resetPositions = function()
 {
-
-
     this.x = this.initialXPosition;
     this.y = this.initialYPosition;
-    
+    this.speed = this.initialSpeed;
+
 }
-
-
-
-// Enemy.prototype.lose = function()
-// {
-//     console.log("perdeu");
-//     alert("lose");
-
-//     setPlayerPos(defaultPlayerXPos, defaultPlayerYPos);
-// }
-
-// Enemy.prototype.collisionDetection = function(enemyX, enemySpriteW, enemyY, enemySpriteH)
-// {
-//     // if(playerPosX-enemySpriteW <enemyX && x< playerPosX+enemySpriteW && playerPosY-enemySpriteH <enemyX && enemyY< playerPosY+enemySpriteH)
-//     // {
-//     //     alert("AAAAh");
-//     //     this.lose();
-//     // }   
-
-//     console.log(enemyX, enemySpriteW, enemyY, enemySpriteH, playerPosX, playerPosY);
-
-//     if(playerPosX > enemyX && playerPosX < enemyX +enemySpriteW && playerPosY > enemyY  && playerPosY < enemyY+enemySpriteH) 
-//     {
-
-//         this.lose();
-
-//     }
-
-
-// }
 
 
 // Update the enemy's position, required method for game
@@ -118,25 +92,9 @@ Enemy.prototype.update = function(dt) {
     }
     this.x = this.x+dt*this.speed;
 
-    //if play.
-
-    //console.log(playerPosY, playerPosX, this.x, this.y);
-
-    // this.collisionDetection(this.x, this.spriteWidth, this.y, this.spriteHeight);
 
 
-
-
-
-
-    //console.log("está fazendo update");
-
-    
 };
-
-
-
-
 
 
 shouldSpriteChangeDirection = function(x)
@@ -158,22 +116,28 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 class Player{
 
-
-
-
     constructor()
     {
         this.sprite = 'images/char-boy.png';
         this.x = _defaultPlayerXPos;
         this.y = _defaultPlayerYPos;
+
+        this.spriteWidth = 171;
+        this.spriteHeight = 101*0.2
+        
         this.lifes = 3;
     }
 
     setLifes(num)
     {
-        debugger;
+        // debugger;
         this.lifes+=num;
         alert(this.lifes);
+    }
+
+    getLifes()
+    {
+        return this.lifes;
     }
 
     update(){
@@ -181,25 +145,26 @@ class Player{
         setPlayerPos(this.x, this.y);
 
         //console.log(playerPosX, playerPosY);
-
-
-
     }
 
     render()
     {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        //console.log("render do personagem");
+    }
+    
+    renderSpecial(x, y) //draws a single instance of the player sprite
+    {
+        ctx.drawImage(Resources.get(this.sprite), x, y);
     }
     handleInput(a){
-        
+
         switch (a)
         {
 
             case 'right':{
                 if(this.isMoveLegal(this.x, a))
-                    {               
-                     this.x = this.x+10;
+                    {
+                     this.x = this.x+_playerXMoveStep;
                     }
                     //console.log(this.x);
                 }
@@ -207,8 +172,8 @@ class Player{
 
             case 'left':{
                 if(this.isMoveLegal(this.x, a))
-                    {               
-                     this.x = this.x-10;
+                    {
+                     this.x = this.x-_playerXMoveStep;
                     }
                     //console.log(this.x);
                 }
@@ -216,8 +181,8 @@ class Player{
 
             case 'up':{
                 if(this.isMoveLegal(this.y, a))
-                {               
-                 this.y = this.y-10;
+                {
+                 this.y = this.y-_playerYMoveStep;
                 }
                 //console.log(this.y);
             }
@@ -225,14 +190,14 @@ class Player{
 
             case 'down':{
                 if(this.isMoveLegal(this.y, a))
-                {               
-                 this.y = this.y+10;
+                {
+                 this.y = this.y+_playerYMoveStep;
                 }
                 //console.log(this.y);
             }
             break;
 
-        }   
+        }
     }
 
     isMoveLegal(position, key)
@@ -246,42 +211,54 @@ class Player{
         {
             case 'right':{
                 if(position < 450) ret = true;
-            } 
+            }
             break;
             case 'left':{
                 if(position >0) ret = true;
-            } 
+            }
             break;
             case 'up':{
-                if(position >0) 
+                if(position >0)
                     {
-                        if(position<20)
-                        {
-                            this.win();
-                        }
+                        // if(position-_playerYMoveStep<20)
+                        // {
+                        //     this.win();
+                        //     ret = false;
+                        // }
 
                     }
                 ret = true;
-            } 
+            }
             break;
             case 'down':{
                 if(position < 450) ret = true;
-            } 
+            }
             break;
 
-            
+            case 'enter':{
+            }
+            break;
+
+
         }
 
         return ret;
 
-    }   
+    }
 
     win()
     {
-        console.log("win");
-        alert("win");
-        this.x = _defaultPlayerXPos;
-        this.y = _defaultPlayerYPos;
+        // setTimeout(function(){ 
+
+        //         this.x = _defaultPlayerXPos;
+        //         this.y = _defaultPlayerYPos;
+        //         debugger;
+        //  }, 3000);
+
+         this.x = _defaultPlayerXPos;
+         this.y = _defaultPlayerYPos;
+
+
     }
 }
 
@@ -291,27 +268,24 @@ class Player{
 
 
 var allEnemies = new Array();
-var enemyEvilBug = new Enemy();
+var enemyEvilBug0 = new Enemy();
+var enemyEvilBug1 = new Enemy();
 var enemyEvilBug2 = new Enemy();
 var enemyEvilBug3 = new Enemy();
+var enemyEvilBug4 = new Enemy();
 
-enemyEvilBug.setInitialPositions(10,30);
-enemyEvilBug2.setInitialPositions(20,250);
-enemyEvilBug3.setInitialPositions(40, 79);
+enemyEvilBug0.setInitialFeatures(10,55, 100);
+enemyEvilBug1.setInitialFeatures(20,140, 200);
+enemyEvilBug2.setInitialFeatures(40, 310, 100);
+enemyEvilBug3.setInitialFeatures(140, 310, 100);
+enemyEvilBug4.setInitialFeatures(140, 225, 100);
 
 
-// enemyEvilBug.x = 10;
-// enemyEvilBug.y = 30;
-
-// enemyEvilBug2.x = 20;
-// enemyEvilBug2.y = 250;
-
-// enemyEvilBug3.x = 120;
-// enemyEvilBug3.y = 150;
-
-allEnemies.push(enemyEvilBug);
+allEnemies.push(enemyEvilBug0);
+allEnemies.push(enemyEvilBug1);
 allEnemies.push(enemyEvilBug2);
 allEnemies.push(enemyEvilBug3);
+allEnemies.push(enemyEvilBug4);
 
 
 // Place the player object in a variable called player
@@ -327,11 +301,10 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        13: 'enter'
     };
-
-
-    //console.log(e.keyCode);
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+

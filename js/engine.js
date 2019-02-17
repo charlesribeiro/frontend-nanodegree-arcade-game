@@ -16,6 +16,9 @@
 const defaultPlayerXPos = 200;
 const defaultPlayerYPos = 450;
 
+var isGameOver = false;
+var won = false;
+
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -47,8 +50,23 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+
+
+        if(!isGameOver && !won)
+        { 
         update(dt);
         render();
+        }
+
+        else if (isGameOver)
+        {
+            renderGameOver();
+        }
+        
+        else if (won)
+        {
+            renderWon();
+        }
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -87,20 +105,45 @@ var Engine = (function(global) {
 
     function checkCollisions()
     {
-        console.log("verificando colisoes");
-
 
         allEnemies.forEach(function(enemy) {
-            if(player.x > enemy.x && player.x < enemy.x +enemy.spriteWidth && player.x > enemy.y  && player.y < enemy.y+enemy.spriteWidth) 
+            if(player.x > enemy.x && player.x < enemy.x +enemy.spriteWidth && player.y > enemy.y  && player.y < enemy.y+enemy.spriteWidth) 
             {
-        
-                player.x = defaultPlayerXPos;
-                player.y = defaultPlayerYPos;
-                player.setLifes(-1);
+                // debugger;
+                collisionHappened();
         
             }
         });
+
+        if(player.y<=20)
+        {
+            won = true;
+        }
+
         player.update();
+    }
+
+
+    function collisionHappened()
+    {
+        player.x = defaultPlayerXPos;
+        player.y = defaultPlayerYPos;
+
+        if(player.getLifes()<=1)
+        {
+            alert("gameOver");
+
+            renderGameOver();
+        }
+        else
+        {
+            player.setLifes(-1);
+        }
+
+        allEnemies.forEach(function(enemy) {
+            enemy.resetPositions();
+        });
+
     }
 
     /* This is called by the update function and loops through all of the
@@ -120,6 +163,7 @@ var Engine = (function(global) {
         {
             reset();
         }
+        
     }
 
     /* This function initially draws the "game level", it will then call
@@ -132,6 +176,7 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
+
         var rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
@@ -168,6 +213,38 @@ var Engine = (function(global) {
         renderEntities();
     }
 
+
+    function renderGameOver()
+    {
+
+    isGameOver = true;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.font = "50px Helvetica";
+    ctx.fillStyle = "red";
+    ctx.textAlign = "center";
+    ctx.fillText("Game Over =/ ",_canvasWidth/2,_canvasHeigth/2);
+
+    enemyEvilBug0.renderSpecial(400, 300);
+    enemyEvilBug0.renderSpecial(50, 100);
+    enemyEvilBug0.renderSpecial(320, 250);
+
+    }
+    
+    function renderWon()
+    {
+
+    won = true;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.font = "50px Helvetica";
+    ctx.fillStyle = "blue";
+    ctx.textAlign = "center";
+    ctx.fillText("You won! ヽ(•‿•)ノ",_canvasWidth/2,_canvasHeigth/2);
+
+    player.renderSpecial(20, 20);
+    enemyEvilBug0.renderSpecial(320, 420);
+
+    }
+
     /* This function is called by the render function and is called on each game
      * tick. Its purpose is to then call the render functions you have defined
      * on your enemy and player entities within app.js
@@ -189,6 +266,8 @@ var Engine = (function(global) {
      */
     function reset() {
 
+        //debugger;
+
         Resources.load([
             'images/stone-block.png',
             'images/water-block.png',
@@ -200,16 +279,6 @@ var Engine = (function(global) {
         ]);
         Resources.onReady(init);
 
-        allEnemies.forEach(function(enemy) {
-            console.log(enemy);
-            enemy.resetPositions();
-        });
-
-
-
-        //console.log("acabou");
-        //alert("game over");
-        // noop;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
