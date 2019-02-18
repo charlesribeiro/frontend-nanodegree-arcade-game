@@ -99,7 +99,7 @@ Enemy.prototype.update = function(dt) {
 
 shouldSpriteChangeDirection = function(x)
 {
-     return (x>= 500 || x<0);
+     return (x>= _canvasWidth || x<0);
 }
 
 
@@ -132,7 +132,7 @@ class Player{
     {
         // debugger;
         this.lifes+=num;
-        alert(this.lifes);
+        alert("Perdeu uma vida");
     }
 
     getLifes()
